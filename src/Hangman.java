@@ -1,3 +1,4 @@
+import java.awt.GridLayout;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.BufferedReader;
@@ -22,7 +23,8 @@ public class Hangman implements KeyListener{
 	String displayedWord = "";
 	char gues;
 	char under = '_';
-	String temp = "";
+	JLabel l2 = new JLabel();
+	int ip = 9;
 	public static void main(String[] args) {
 		Hangman h = new Hangman();
 	}
@@ -57,30 +59,45 @@ public class Hangman implements KeyListener{
 				e.printStackTrace();
 			}
 		}
+		p.setLayout(new GridLayout(3,1));
+		
+		s.pop();
 		f.addKeyListener(this);
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		f.add(p);
 		p.add(l);
 		p.add(guess);
 		l.setText("Guess a Letter");
+		p.add(l2);
 		f.setVisible(true);
 		initializeDisplayedWord();
 		f.setSize(500, 300);
 	}
 	void initializeDisplayedWord() {
+		displayedWord = "";
 		for (int i = 0; i < currentWord.length(); i++) {
 			displayedWord += "_";
 		}
 		guess.setText(displayedWord);
 	}
 	void updateDisplayedWord(char c) {
-
+			String temp = "";
+			Boolean apple = null;
 			for (int j = 0; j < currentWord.length(); j++) {
 				if (currentWord.charAt(j)==c) {
 					temp += c;
+					apple = true;
 				}
 				else {
-					temp += displayedWord.charAt(j);
+					temp += displayedWord.charAt(j); 
+					apple = false;
+				}
+			}
+			if(apple == false) {
+				ip = ip-1; 
+				if(ip <= 0) {
+					JOptionPane.showMessageDialog(null, "You suck");
+					System.exit(0);
 				}
 			}
 			displayedWord = temp;
@@ -91,8 +108,11 @@ public class Hangman implements KeyListener{
 			if (ch.charAt(i) == under) {
 				return;
 			}
-		}
+		}		JOptionPane.showMessageDialog(null, "The word was " + currentWord);
 				currentWord = s.pop();
+				ip = 9;
+				initializeDisplayedWord();
+				
 	}
 	@Override
 	public void keyTyped(KeyEvent e) {
@@ -104,7 +124,8 @@ public class Hangman implements KeyListener{
 	public void keyPressed(KeyEvent e) {
 		updateDisplayedWord(e.getKeyChar());
 		guess.setText(displayedWord);
-		checkWord(temp);
+		checkWord(displayedWord);
+		l2.setText("You have " + ip + " lives left");
 	}
 
 	@Override
